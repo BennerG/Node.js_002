@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+// const {Sequelize, DataTypes} = require('sequelize'); new documentation listed this definition
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
@@ -21,8 +22,13 @@ fs
     return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
   })
   .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
+    // because sequelize.import() has been depreciated
+    // I created a workaround for what I think is happening under the hood
+    // we'll see if this causes issues later
+    const modelName = path.join(__dirname, file);
+    const model = require(modelName);
+    sequelize.models[modelName] = model;
+    db[modelName] = model;
   });
 
 Object.keys(db).forEach(modelName => {
